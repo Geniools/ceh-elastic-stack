@@ -1,0 +1,18 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/cowrie/cowrie.json
+#    - /var/log/pyrdp_output/*.log
+#    - /var/log/pyrdp_output/*.json
+    - /var/log/pyrdp_output/mitm.json
+  json.keys_under_root: true
+  json.overwrite_keys: true
+  json.add_error_key: true
+  json.expand_keys: true
+
+output.logstash:
+  hosts: ["logstash:5044"]
+
+http.enabled: true
+http.host: 0.0.0.0

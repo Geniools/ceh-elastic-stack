@@ -1,0 +1,98 @@
+version: "3"
+services:
+  cowrie:
+    image: cowrie/cowrie
+    ports:
+#      - "22:22"
+#      - "23:23"
+      - "2222:2222"
+      - "2323:2323"
+    volumes:
+      - ./cowrie/config/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg
+      - ./cowrie/config/userdb.txt:/cowrie/cowrie-git/etc/userdb.txt
+      - ./cowrie/log/cowrie.json:/cowrie/cowrie-git/var/log/cowrie/cowrie.json
+  elasticsearch:
+    build: ./elasticsearch
+    environment:
+      ES_JAVA_OPTS: -Xms256m -Xmx256m
+      discovery.type: single-node
+    ports:
+      - "9200:9200"
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+  kibana:
+    build: ./kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+  logstash:
+    build: ./logstash
+    ports:
+      - "5044:5044"
+    volumes: 
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    environment:
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+  filebeat:
+    build: ./filebeat
+    volumes:
+      - ./cowrie/log/cowrie.json:/var/log/cowrie/cowrie.json
+      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./pyrdp/log:/var/log/pyrdp_output
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+      
+  pyrdp:
+    image: gosecure/pyrdp
+    command: pyrdp-mitm 0.0.0.0
+    user: "1000:1000"
+    ports:
+      - "3389:3389"
+    volumes:
+      - ./pyrdp/log:/home/pyrdp/pyrdp_output/logs
+      - ./pyrdp/replays:/home/pyrdp/pyrdp_output/replays
+      - ./pyrdp/files:/home/pyrdp/pyrdp_output/files
+      - ./pyrdp/certs:/home/pyrdp/pyrdp_output/certs
+      - ./pyrdp/filesystems:/home/pyrdp/pyrdp_output/filesystems
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+      
+  honeytrap:
+    image: honeytrap/honeytrap:latest
+    container_name: honeytrap
+    ports:
+      - "1339:1339"
+    volumes:
+      - ./honeytrap/config/config.toml:/config/config.toml
+    # Keep trying to start HoneyTrap. HoneyTrap will exit when Elastic is not ready.
+    # Healthcheck condition in depends_on has been deprecated after version 2.1
+    restart: on-failure
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+volumes:
+  elasticsearch:
+
+networks:
+  elastic:
