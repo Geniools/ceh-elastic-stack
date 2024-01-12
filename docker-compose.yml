@@ -54,6 +54,7 @@ services:
       - ./cowrie/log/cowrie.json:/var/log/cowrie/cowrie.json
       - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - ./pyrdp/log:/var/log/pyrdp_output
+      - ./ddospot/logs:/var/log/ddospot_output
     depends_on:
       - elasticsearch
     networks:
@@ -76,16 +77,21 @@ services:
     networks:
       - elastic
       
-  honeytrap:
-    image: honeytrap/honeytrap:latest
-    container_name: honeytrap
-    ports:
-      - "1339:1339"
+# https://github.com/aelth/ddospot?tab=readme-ov-file : check this link for the ports to enable to run a specific honeypot
+  ddospot:
+    build:
+      context: ./ddospot
+    image: aelth/simpledns
     volumes:
-      - ./honeytrap/config/config.toml:/config/config.toml
-    # Keep trying to start HoneyTrap. HoneyTrap will exit when Elastic is not ready.
-    # Healthcheck condition in depends_on has been deprecated after version 2.1
-    restart: on-failure
+      - ./ddospot/bl:/ddospot/bl
+      - ./ddospot/db:/ddospot/db
+      - ./ddospot/logs:/ddospot/logs
+    ports:
+#      - "19:19/udp"
+#      - "54:53/udp" 
+#      - "123:123/udp"
+      - "161:161/udp"
+#      - "1901:1900/udp"
     depends_on:
       - elasticsearch
     networks:

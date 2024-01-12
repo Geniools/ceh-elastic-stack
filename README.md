@@ -63,7 +63,7 @@ sudo apt install docker-compose -y
 6. Clone this repository, and change to the directory
 
 ```bash
-git clone https://github.com/Geniools/TODO: Add directory name here
+git clone https://github.com/Geniools/ceh-elastic-stack
 cd Directory Name
 ```
 
@@ -73,8 +73,14 @@ cd Directory Name
 sudo apt install nmap
 ```
 
+8. Create the file `cowrie.json` inside the `cowrie/log/` directory. Afterwards give it the right permissions.
 
-8. Build and run containers
+```bash
+sudo touch cowrie.json
+sudo chmod o+w cowrie.json
+```
+
+9. Build and run containers
 
 ```bash
 docker compose up
@@ -86,11 +92,11 @@ You can run the containers as a daemon with the following command:
 docker compose up -d
 ```
 
-9. Access Kibana in your browser
+10. Access Kibana in your browser
 
 You can access Kibana by typing `http://[IP address]:5601` in your browser. 
 
-10. Go to Analytics -> Discover:
+11. Go to Analytics -> Discover:
 
 Create a new data view for each honeypot (on the right you'll see "patterns" with the initialls of the honeypot). Create one data view for each honeypot.
 
