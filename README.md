@@ -6,7 +6,7 @@ This is done part of the CEH minor at NHL Stenden University of Applied Sciences
 * Docker Compose
 * Cowrie SSH/Telnet honeypot
 * PyRdp honeypot
-* HoneyTrap (currently not working as expecting)
+* DDosPot
 * Elastic Stack
   * Elasticsearch
   * Kibana
@@ -14,17 +14,18 @@ This is done part of the CEH minor at NHL Stenden University of Applied Sciences
   * Logstash
 
 ## System requirements
-* 4GB RAM
-* 20GB free Space
+* 6-8GB RAM
+* 40GB free Space
+* It was tested on Ubuntu 20.04
 
 ## How to build the environment
 1. Update the package to the latest version
 
 ```bash
-sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove
+sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y
 ```
 
-2. Change the port number when logging in via SSH (only if you plan to run Cowrie on the default SSH port: 22)
+2. **(Optional)** Change the port number when logging in via SSH **(only if you plan to run Cowrie on the default SSH port: 22)**
 
 ```bash
 sudo vim /etc/ssh/sshd_config
@@ -73,14 +74,27 @@ cd Directory Name
 sudo apt install nmap
 ```
 
-8. Create the file `cowrie.json` inside the `cowrie/log/` directory. Afterwards give it the right permissions.
+**After all the containers started and kibana is running you can test the logging:**
+
+```bash
+sudo nmap -A -T4 0.0.0.0
+sudo nmap -sU 0.0.0.0
+```
+
+8. Create the file `cowrie.json` inside the `cowrie/log` directory. Afterwards give it the right permissions.
 
 ```bash
 sudo touch cowrie.json
 sudo chmod o+w cowrie.json
 ```
 
-9. Build and run containers
+9. Give the right permissions to `filebeat.yml` inside the `filebeat/config` directory.
+
+```bash
+sudo chmod go-w filebeat.yml
+```
+
+10. Build and run containers
 
 ```bash
 docker compose up
@@ -92,11 +106,11 @@ You can run the containers as a daemon with the following command:
 docker compose up -d
 ```
 
-10. Access Kibana in your browser
+11. Access Kibana in your browser
 
-You can access Kibana by typing `http://[IP address]:5601` in your browser. 
+You can access Kibana by typing `http://127.0.0.1:5601` in your browser. 
 
-11. Go to Analytics -> Discover:
+12. Go to Analytics -> Discover:
 
-Create a new data view for each honeypot (on the right you'll see "patterns" with the initialls of the honeypot). Create one data view for each honeypot.
+Create a new data view for each honeypot *(on the right you'll see "patterns" with the initialls of the honeypot)*. Create one data view for each honeypot.
 
