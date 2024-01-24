@@ -16,7 +16,7 @@ This is done part of the CEH minor at NHL Stenden University of Applied Sciences
 ## System requirements
 * 6-8GB RAM
 * 40GB free Space
-* It was tested on Ubuntu 20.04
+**Note!** This project was tested on the above mentioend characteristics, on Ubuntu 20.04.
 
 ## How to build the environment
 1. Update the package to the latest version
@@ -55,7 +55,7 @@ sudo apt install docker.io -y
 
 Please see here: [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
-For Linux use:
+For Ubuntu use:
 
 ```bash
 sudo apt install docker-compose -y
@@ -68,7 +68,37 @@ git clone https://github.com/Geniools/ceh-elastic-stack
 cd Directory Name
 ```
 
-7. Optional: Install NMAP to to a quick test attack
+7. Create the file `cowrie.json` inside the `cowrie/log` directory. Afterwards give it the right permissions.
+
+```bash
+sudo touch cowrie.json
+sudo chmod o+w cowrie.json
+```
+
+8. Give the right permissions to `filebeat.yml` inside the `filebeat/config` directory.
+
+```bash
+sudo chmod go-w filebeat.yml
+```
+
+9. Build and run containers
+
+```bash
+docker-compose up
+```
+
+You can run the containers as a daemon with the following command:
+
+```bash
+docker-compose up -d
+```
+
+10. Access Kibana in your browser
+
+You can access Kibana by typing `http://127.0.0.1:5601` in your browser. 
+
+
+11. Install NMAP to to a quick test attack
 
 ```bash
 sudo apt install nmap
@@ -80,35 +110,6 @@ sudo apt install nmap
 sudo nmap -A -T4 0.0.0.0
 sudo nmap -sU 0.0.0.0
 ```
-
-8. Create the file `cowrie.json` inside the `cowrie/log` directory. Afterwards give it the right permissions.
-
-```bash
-sudo touch cowrie.json
-sudo chmod o+w cowrie.json
-```
-
-9. Give the right permissions to `filebeat.yml` inside the `filebeat/config` directory.
-
-```bash
-sudo chmod go-w filebeat.yml
-```
-
-10. Build and run containers
-
-```bash
-docker compose up
-```
-
-You can run the containers as a daemon with the following command:
-
-```bash
-docker compose up -d
-```
-
-11. Access Kibana in your browser
-
-You can access Kibana by typing `http://127.0.0.1:5601` in your browser. 
 
 12. Go to Analytics -> Discover:
 
