@@ -16,6 +16,7 @@ This is done part of the CEH minor at NHL Stenden University of Applied Sciences
 ## System requirements
 * 6-8GB RAM
 * 40GB free Space
+
 **Note!** This project was tested on the above mentioend characteristics, on Ubuntu 20.04.
 
 ## How to build the environment
