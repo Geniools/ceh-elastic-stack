@@ -1,0 +1,6 @@
+rsa==4.0
+twisted 
+pyopenssl 
+qt4reactor 
+service_identity
+pyasn1 
