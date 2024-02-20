@@ -1,13 +1,14 @@
-# Elastic Stack: Honeypots
-A docker-compose "project" to run several honeypots and log all the output in Elasticsearch. 
+# Elastic Stack: A honeynet with Elasticstack
+A docker-compose "project" for running several honeypots and log all the output in Elasticsearch.
+ 
 This is done part of the CEH minor at NHL Stenden University of Applied Sciences, Emmen, The Netherlands.
 
 ## Components
 * Docker Compose
-* Cowrie SSH/Telnet honeypot
-* PyRdp honeypot (mitm tool)
-* PyRdp honeypot (simulation) - *not working fully*
-* DDosPot
+* [Cowrie SSH/Telnet honeypot](https://github.com/cowrie/cowrie)
+* [PyRdp honeypot (mitm tool)](https://github.com/GoSecure/pyrdp)
+* [PyRdp honeypot (simulation) - *not fully working*](https://github.com/citronneur/rdpy)
+* [DDosPot](https://github.com/aelth/ddospot)
 * Elastic Stack
   * Elasticsearch
   * Kibana
@@ -51,7 +52,7 @@ sudo apt install docker-compose -y
 
 ```bash
 git clone https://github.com/Geniools/ceh-elastic-stack
-cd Directory Name
+cd ceh-elastic-stack
 ```
 
 ### Configure Cowrie
@@ -89,24 +90,40 @@ sudo chmod go-w filebeat.yml
 
 There are two honeypots meant for RDP connections.
 
-1. 
+1. PyRDP from GoSecure
 
-The first one is runnig on the default port 3389, and requires an external Windows server with RDP enabled (for instance a Windows virtual machine).
-Moreover, you will need to create a **.env** file at the root of the project and specify the IP address of the Windows server:
+The first honeypot is runnig on the default port 3389, and requires an external Windows server with RDP enabled (for instance a Windows virtual machine). Check [this link](https://support.microsoft.com/en-us/windows/how-to-use-remote-desktop-5fe128d5-8fb1-7a23-3b8a-41e636865e8c#ID0EDD=Windows_10) on how to enable RDP on Windows 10 or 11.
+
+Moreover, you will need to create a **.env** file at the root of the project and specify the *RDP_SERVER_IP* variable pointing to the IP address of the Windows server:
 
 ```dotenv
 RDP_SERVER_IP=x.x.x.x
 ```
 
-*Remember to replace with 'x.x.x.x' wit the real IP address of the server*
+*Remember to replace 'x.x.x.x' with the real IP address of the server*
+
+If the Windows server is not running on the default port 3389, you can add the actual port after the colon like this:
+
+```dotenv
+RDP_SERVER_IP=x.x.x.x:port
+```
 
 Afterwards, you can connect to the RDP server by specifying the IP address **of the linux server** running the hoenypot.
+
+
+This honeypot is delivered together with the *PyRDP Player*, which is a GUI application meant to open and visualize the RDP connections captured by the hoenypot.
+The player will run automatically when the docker cluster is started. To replay a connection use the *open* button inside the application as such:
+
+![RDP Player](./assets/rdp_player.png)
+![RDP Player Open](./assets/rdp_player_open.png)
  
-2. 
+2. RDPY honeypot
 
 The second RDP honeypot will only display the login page of a fake Windows server, and then crash. Stil, some information of the 'attacker' will be logged and saved to elasticsearch.
 
-This honeypot *does* **not** *require* and additional RDP windows server and runs on a custom port *3390*.
+![Broken RDP honeypot](./assets/broken_rdp_honeypot.png)
+
+This honeypot *does* **not** *require* an additional RDP Windows server and runs on the custom port *3390*.
 
 To connect to this honeypot, us the IP address of the Linux machine running the hoenypot, after which write the port 3390, such as:
 
@@ -114,23 +131,27 @@ To connect to this honeypot, us the IP address of the Linux machine running the 
 x.x.x.x:3390
 ```
 
+**Note!** To see both honeypots in action, you need to initiate an RDP connection to the Linux server running the docker containers!
+
 ### Build the environment
 
 1. Build and run containers
 
 ```bash
-docker-compose up
+sudo docker-compose up
 ```
 
 You can run the containers as a daemon with the following command:
 
 ```bash
-docker-compose up -d
+sudo docker-compose up -d
 ```
+
+*The build might take up to 10-15 minutes!*
 
 2. Access Kibana in your browser
 
-You can access Kibana by typing `http://127.0.0.1:5601` in your browser. 
+You can access Kibana by going to `http://127.0.0.1:5601` in your browser. 
 
 
 ## Test logging and honeypot's reaction
@@ -148,7 +169,14 @@ sudo nmap -A -T4 0.0.0.0
 sudo nmap -sU 0.0.0.0
 ```
 
+**For the RDP honeypots you will need connect using RDP from another Windows machine**
+
+![RDP client](./assets/rdp_client_windows.png)
+![RDP client with port](./assets/rdp_client_windows_port.png)
+
 2. Go to **Analytics -> Discover** in order to view the logged data:
 
 Create a new data view for each honeypot *(on the right you'll see "patterns" with the initialls of the honeypot)*. Create one data view for each honeypot.
+
+![Kibana Data View](./assets/kibana_data_view.png)
 
