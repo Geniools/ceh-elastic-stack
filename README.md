@@ -1,4 +1,4 @@
-# Elastic Stack: A honeynet with Elasticstack
+# A honeynet connected with Elasticstack
 A docker-compose "project" for running several honeypots and log all the output in Elasticsearch.
  
 This is done part of the CEH minor at NHL Stenden University of Applied Sciences, Emmen, The Netherlands.
@@ -80,7 +80,7 @@ sudo chmod o+w cowrie.json
 
 ### Configure Filebeat
 
-8. Give the right permissions to `filebeat.yml` inside the `filebeat/config` directory.
+1. Give the right permissions to `filebeat.yml` inside the `filebeat/config` directory.
 
 ```bash
 sudo chmod go-w filebeat.yml
@@ -119,7 +119,7 @@ The player will run automatically when the docker cluster is started. To replay 
  
 2. RDPY honeypot
 
-The second RDP honeypot will only display the login page of a fake Windows server, and then crash. Stil, some information of the 'attacker' will be logged and saved to elasticsearch.
+The second RDP honeypot will only display the login page of a fake Windows server, and then crash. Still, some information of the 'attacker' will be logged and saved to elasticsearch.
 
 ![Broken RDP honeypot](./assets/broken_rdp_honeypot.png)
 
@@ -180,3 +180,19 @@ Create a new data view for each honeypot *(on the right you'll see "patterns" wi
 
 ![Kibana Data View](./assets/kibana_data_view.png)
 
+### Data view indexes
+
+| Honeypot  | Data view - source name  |
+|:-:|---|
+| Cowrie   | cowrie-yyyy.mm.dd  |
+| PyRDP  | pyrdp-yyyy.mm.dd  |
+| PyRDP Scenario (RDPY)  | default-yyyy.mm.dd  |
+| DdosPot  | default-yyyy.mm.dd  |
+
+
+**RDPY** *and* **DDosPot** *do not generate an unique field for filebeat to differentiate them, therefore both of them are within the* **default** *source pattern.*
+
+
+## Video recordings
+
+You can find video recordings of all the honeypots expected behaviour [here](./videos).
