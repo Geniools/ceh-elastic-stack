@@ -92,9 +92,15 @@ There are two honeypots meant for RDP connections.
 
 1. PyRDP from GoSecure
 
-The first honeypot is runnig on the default port 3389, and requires an external Windows server with RDP enabled (for instance a Windows virtual machine). Check [this link](https://support.microsoft.com/en-us/windows/how-to-use-remote-desktop-5fe128d5-8fb1-7a23-3b8a-41e636865e8c#ID0EDD=Windows_10) on how to enable RDP on Windows 10 or 11.
+The first honeypot is running on the default port 3389, and requires an external Windows server with RDP enabled (for instance a Windows virtual machine). Check [this link](https://support.microsoft.com/en-us/windows/how-to-use-remote-desktop-5fe128d5-8fb1-7a23-3b8a-41e636865e8c#ID0EDD=Windows_10) on how to enable RDP on Windows 10 or 11.
 
-Moreover, you will need to create a **.env** file at the root of the project and specify the *RDP_SERVER_IP* variable pointing to the IP address of the Windows server:
+Moreover, you will need to create a **.env** file at the root of the project. 
+
+```bash
+nano .env
+```
+
+Inside the **.env** file specify the *RDP_SERVER_IP* variable pointing to the IP address of the Windows server:
 
 ```dotenv
 RDP_SERVER_IP=x.x.x.x
@@ -108,7 +114,7 @@ If the Windows server is not running on the default port 3389, you can add the a
 RDP_SERVER_IP=x.x.x.x:port
 ```
 
-Afterwards, you can connect to the RDP server by specifying the IP address **of the linux server** running the hoenypot.
+Afterwards, you can connect to the RDP server by specifying the IP address **of the linux server** running the honeypot.
 
 
 This honeypot is delivered together with the *PyRDP Player*, which is a GUI application meant to open and visualize the RDP connections captured by the hoenypot.
